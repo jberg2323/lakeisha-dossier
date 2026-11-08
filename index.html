@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The LaKeisha Dossier</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LaKeisha">
+<meta name="theme-color" content="#2A1B3D">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2A1B3D; --moss:#6B3FA0; --mint:#F3EEF8; --paper:#FBF8FD; --gold:#E0A34A; --ink:#1B1426;
+  --bg:var(--mint); --card:var(--paper); --fg:var(--ink); --muted:#6A5E78; --line:#DDD3E8; --accent:var(--moss); --accent-ink:#fff; --hero:var(--forest); --hero-fg:#F6F0FA; --chip:#E7DDF1;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#140F1E; --card:#1E1729; --fg:#EFE8F5; --muted:#A99BB8; --line:#342A42; --accent:#B48BE6; --accent-ink:#140F1E; --hero:#0E0A16; --hero-fg:#EFE8F5; --chip:#2A2138; color-scheme:dark;
+}}
+:root[data-theme="dark"]{ --bg:#140F1E; --card:#1E1729; --fg:#EFE8F5; --muted:#A99BB8; --line:#342A42; --accent:#B48BE6; --accent-ink:#140F1E; --hero:#0E0A16; --hero-fg:#EFE8F5; --chip:#2A2138; color-scheme:dark; }
+html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0; background:var(--bg); color:var(--fg); font-family:"DM Sans",-apple-system,"Helvetica Neue",Arial,sans-serif; font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased; height:100%; -webkit-tap-highlight-color:transparent}
+h1,h2,h3,.serif{font-family:"Fraunces","Iowan Old Style",Georgia,serif; font-weight:400; letter-spacing:-0.01em; margin:0}
+img,svg{max-width:100%}
+button{font:inherit; color:inherit}
+.view{display:none; padding:0 18px 110px}
+.view.active{display:block}
+.inner{max-width:560px; margin:0 auto}
+.hero{background:var(--hero); color:var(--hero-fg); margin:0 -18px; padding:calc(22px + env(safe-area-inset-top,0px)) 18px 26px}
+.hero .inner{display:flex; flex-direction:column; gap:10px}
+.hero h1{font-size:40px; line-height:1; font-variation-settings:"opsz" 144; }
+.hero h1 em{font-style:italic; font-weight:300}
+.hero p.sub{margin:0; color:#C9BBDD; font-size:14px}
+.wheel-wrap{position:relative; width:100%; max-width:340px; margin:8px auto 0}
+.wheel-wrap svg{width:100%; height:auto; display:block}
+.planet{cursor:pointer}
+.planet circle{transition:r .15s}
+.planet.sel circle{stroke:var(--gold); stroke-width:3}
+.planet text{font-family:"Fraunces",Georgia,serif; font-size:13px; fill:#F6F0FA; pointer-events:none}
+.sign-label{font-family:"Fraunces",Georgia,serif; font-size:10px; fill:#A897C2}
+.readout{background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:12px 14px; min-height:84px}
+.readout h3{font-size:18px; color:var(--gold)}
+.readout p{margin:4px 0 0; font-size:14px; color:#E2D8EC}
+.readout .hint{color:#A897C2; font-size:13px}
+.sec{margin-top:26px}
+.sec h2{font-size:28px; line-height:1.1; margin-bottom:6px}
+.lede{color:var(--muted); margin:0 0 14px; font-size:15px}
+.card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px 16px; margin-bottom:10px}
+.facts{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px}
+.fact{background:var(--chip); border-radius:12px; padding:10px 12px}
+.fact b{display:block; font-family:"Fraunces",Georgia,serif; font-weight:500; font-size:20px; line-height:1.1}
+.fact span{font-size:12px; color:var(--muted)}
+details{border-top:1px solid var(--line)}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between; padding:14px 2px; gap:10px}
+summary::-webkit-details-marker{display:none}
+summary .t{font-family:"Fraunces",Georgia,serif; font-size:20px}
+summary .s{font-size:13px; color:var(--muted); display:block}
+summary .arrow{width:28px; height:28px; border-radius:50%; border:1px solid var(--line); display:grid; place-items:center; flex:none; transition:transform .2s}
+details[open] summary .arrow{transform:rotate(45deg); background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+details .body{padding:0 2px 16px; font-size:15px}
+details .body p{margin:0 0 10px}
+.conf{display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; background:var(--chip); color:var(--muted); margin-left:6px; vertical-align:middle}
+.tag{display:inline-block; font-size:13px; padding:4px 10px; border-radius:999px; background:var(--chip); margin:0 6px 6px 0}
+.ll{display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-top:8px}
+.ll button{background:var(--chip); border:1px solid transparent; border-radius:12px; padding:10px 4px; font-size:12px; line-height:1.15; display:flex; flex-direction:column; align-items:center; gap:4px; min-height:64px}
+.ll button .n{font-family:"Fraunces",Georgia,serif; font-size:22px; font-weight:500; line-height:1}
+.ll button.hot{background:var(--accent); color:var(--accent-ink)}
+.ll-note{font-size:13px; color:var(--muted); margin-top:8px}
+.step{display:flex; gap:12px; align-items:flex-start; padding:14px 2px; border-top:1px solid var(--line)}
+.step:last-child{border-bottom:1px solid var(--line)}
+.chk{flex:none; width:30px; height:30px; border-radius:50%; border:2px solid var(--accent); background:transparent; display:grid; place-items:center; margin-top:2px}
+.chk svg{opacity:0; transition:opacity .15s}
+.step.done .chk{background:var(--accent)}
+.step.done .chk svg{opacity:1}
+.step.done .txt h3{text-decoration:line-through; text-decoration-color:var(--muted); opacity:.7}
+.step .txt h3{font-size:19px; margin-bottom:3px}
+.step .txt p{margin:0; font-size:14px; color:var(--muted)}
+.step .why{font-size:13px; margin-top:6px; color:var(--fg); background:var(--chip); border-radius:10px; padding:8px 10px}
+.progress{height:8px; background:var(--chip); border-radius:99px; overflow:hidden; margin:10px 0 6px}
+.progress i{display:block; height:100%; width:0; background:var(--accent); transition:width .3s}
+.burger{display:flex; align-items:center; gap:12px; padding:12px 0; border-top:1px solid var(--line)}
+.burger:last-child{border-bottom:1px solid var(--line)}
+.burger .rank{font-family:"Fraunces",Georgia,serif; font-size:24px; width:30px; color:var(--muted); text-align:center}
+.burger .name{flex:1}
+.burger .name b{display:block; font-weight:600}
+.burger .name span{font-size:13px; color:var(--muted)}
+.stars{display:flex; gap:3px}
+.stars button{width:30px; height:34px; border:0; background:none; padding:0; font-size:20px; color:var(--line)}
+.stars button.on{color:var(--gold)}
+.add{display:flex; gap:8px; margin-top:12px}
+.add input{flex:1; border:1px solid var(--line); background:var(--card); color:var(--fg); border-radius:12px; padding:12px 14px; font:inherit; font-size:16px}
+.btn{border:0; background:var(--accent); color:var(--accent-ink); border-radius:12px; padding:12px 16px; font-weight:600}
+.btn.ghost{background:var(--chip); color:var(--fg)}
+.note{font-size:13px; color:var(--muted)}
+.cats{display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 12px}
+.cats button{border:1px solid var(--line); background:var(--card); border-radius:999px; padding:8px 13px; font-size:14px}
+.cats button.on{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+.txtcard{background:var(--hero); color:var(--hero-fg); border-radius:16px; padding:18px 18px 14px; margin-bottom:10px}
+.txtcard p{font-family:"Fraunces",Georgia,serif; font-size:21px; line-height:1.3; margin:0 0 14px; min-height:84px}
+.txtcard .row{display:flex; gap:8px}
+.txtcard .row button{flex:1; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.08); color:var(--hero-fg); border-radius:12px; padding:11px; font-weight:600}
+.txtcard .row button.primary{background:var(--gold); color:#1c1a12; border-color:var(--gold)}
+.ideas{margin:0; padding:0; list-style:none}
+.ideas li{padding:10px 0; border-top:1px solid var(--line); font-size:15px}
+.ideas li:first-child{border-top:0}
+.ideas li b{font-weight:600}
+.moon{counter-reset:m}
+.moon .card{display:flex; gap:12px}
+.moon .card::before{counter-increment:m; content:counter(m); font-family:"Fraunces",Georgia,serif; font-size:30px; line-height:1; color:var(--gold); flex:none; width:30px}
+.moon .card h3{font-size:19px; margin-bottom:4px}
+.moon .card p{margin:0; font-size:14px; color:var(--muted)}
+textarea.notes{width:100%; min-height:120px; border:1px solid var(--line); background:var(--card); color:var(--fg); border-radius:12px; padding:12px 14px; font:inherit; font-size:16px; resize:vertical}
+.src p{margin:0 0 10px; font-size:14px}
+.src b{font-weight:600}
+nav.tabs{position:fixed; left:0; right:0; bottom:0; background:var(--card); border-top:1px solid var(--line); display:flex; justify-content:space-around; padding:6px 6px calc(8px + env(safe-area-inset-bottom,0px)); z-index:20}
+nav.tabs button{flex:1; border:0; background:none; display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 0; font-size:10.5px; color:var(--muted); border-radius:12px; min-width:0}
+nav.tabs button svg{width:24px; height:24px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+nav.tabs button.on{color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.topbar{position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top,0px); background:var(--hero); z-index:30}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<section class="view active" id="v-chart">
+  <div class="hero"><div class="inner">
+    <h1>The LaKeisha <em>Dossier</em></h1>
+    <p class="sub">LaKeisha Cole · born December 18, 1987, 11:47 AM, Austin</p>
+    <div class="wheel-wrap"><svg id="wheel" viewBox="0 0 340 340" role="img" aria-label="Natal chart wheel, tap a planet"></svg></div>
+    <div class="readout" id="readout"><h3>Tap a planet</h3><p class="hint">Each one is a lever in the friendship. Start with the Sun, then the Moon.</p></div>
+  </div></div>
+  <div class="inner">
+    <div class="sec">
+      <h2>At a glance</h2>
+      <div class="facts">
+        <div class="fact"><b>Sagittarius</b><span>Sun · 26° (Venus, Saturn, Uranus too)</span></div>
+        <div class="fact"><b>Scorpio</b><span>Moon · ~29°, on the Sag cusp</span></div>
+        <div class="fact"><b>Pisces</b><span>Rising · ~10°</span></div>
+        <div class="fact"><b>Scorpio</b><span>Mars · 17°</span></div>
+        <div class="fact"><b>1 / 11 / 9</b><span>Life Path · Expression · Soul Urge</span></div>
+        <div class="fact"><b>4/1 or 4/6</b><span>Human Design profile (verify)</span></div>
+        <div class="fact"><b>Eden</b><span>Right Angle Cross</span></div>
+        <div class="fact"><b>Fire Rabbit</b><span>Chinese zodiac</span></div>
+      </div>
+    </div>
+    <div class="sec">
+      <h2>The systems</h2>
+      <p class="lede">Open each one. The parts that disagree are as useful as the parts that rhyme.</p>
+      <details open>
+        <summary><div><span class="t">Astrology</span><span class="s">Fire on the outside, deep water underneath</span></div><span class="arrow">+</span></summary>
+        <div class="body">
+          <p><b>Sagittarius Sun, Venus, Saturn and Uranus.</b> Four planets in the sign of truth, travel and freedom. She is funny, blunt, allergic to being boxed in, and loves people who will go somewhere with her. Don't plan her; invite her.</p>
+          <p><b>Saturn and Uranus sitting on her Sun.</b> The rare combination of discipline and rebellion. She carries more weight than she shows and reinvents herself on her own schedule. Respect the seriousness under the jokes.</p>
+          <p><b>Moon in late Scorpio, Mars in Scorpio.</b> The emotional core is private, loyal and intense. She tests before she trusts and never forgets a betrayal. Keep her confidences like they are classified.</p>
+          <p><b>Pisces rising.</b> Soft, empathic entry point. She reads feelings before words, absorbs rooms, and needs recovery time after people. Let her disappear and come back.</p>
+          <p><b>Jupiter in Aries, Neptune in Capricorn, Pluto in Scorpio.</b> Bold luck when she acts first; a practical dreamer; generational depth.</p>
+        </div>
+      </details>
+      <details>
+        <summary><div><span class="t">Numerology</span><span class="s">The leader who shows up as a diplomat</span></div><span class="arrow">+</span></summary>
+        <div class="body">
+          <span class="tag">Life Path 1</span><span class="tag">Birthday 9</span><span class="tag">Expression 11</span><span class="tag">Soul Urge 9</span><span class="tag">Personality 2</span><span class="tag">Personal Year 22/4</span>
+          <p style="margin-top:8px"><b>Life Path 1</b> is the independent originator. She wants to lead her own life and will quietly resent being managed. <b>Expression 11</b> is the inspirer with the sensitive nervous system.</p>
+          <p><b>Soul Urge 9</b> means what she actually wants is to matter to people and to a cause. <b>Personality 2</b> is why she comes across softer and more cooperative than she is inside.</p>
+          <p><b>Personal Year 22/4 (2026)</b> is a master-builder year: foundations, structures, long-game decisions. Help her build, don't distract her.</p>
+        </div>
+      </details>
+      <details>
+        <summary><div><span class="t">Human Design</span><span class="s">Likely Projector · 4/1 or 4/6 · Cross of Eden</span></div><span class="arrow">+</span></summary>
+        <div class="body">
+          <span class="tag">Sun 11.4</span><span class="tag">Earth 12.4</span><span class="tag">Design Sun 46.1 or 6.6</span><span class="tag">Design Earth 25 or 36</span>
+          <p style="margin-top:8px"><b>Likely a Projector</b> <span class="conf">verify</span>: her gift is seeing people clearly, and her poison is being ignored or pushed. Invite her in, ask what she sees, and she lights up. Volunteer unasked advice at her and she shuts down.</p>
+          <p><b>4th line.</b> Her life runs on her network and her closest circle. Friendships are the infrastructure, not the decoration.</p>
+          <p><b>Gate 11</b> is the gate of ideas; she generates them constantly and needs someone who enjoys hearing them. <b>Gate 12</b> is the gate of caution in expression: when the mood is wrong she goes quiet, not because she doesn't care.</p>
+          <p><b>Cross of Eden.</b> Innocence, ideas, and the loss of innocence as the teacher. She has learned the hard way more than once.</p>
+        </div>
+      </details>
+      <details>
+        <summary><div><span class="t">Gene Keys</span><span class="s">Ideas, discernment, delight, acceptance</span></div><span class="arrow">+</span></summary>
+        <div class="body">
+          <p><b>Life's Work · 11</b> Obscurity → Idealism → Light. Her mind is a fountain of images and ideas; the shadow is believing none of them matter. Take her ideas seriously.</p>
+          <p><b>Evolution · 12</b> Vanity → Discrimination → Purity. She is learning when to speak and when silence is the stronger move.</p>
+          <p><b>Radiance · 46 (or 6)</b> Seriousness → Delight → Ecstasy. She shines when she stops bracing and lets the body enjoy the moment: food, music, movement.</p>
+          <p><b>Purpose · 25 (or 36)</b> Constriction → Acceptance → Universal Love. Her purpose runs through radical acceptance of people as they are.</p>
+        </div>
+      </details>
+      <details>
+        <summary><div><span class="t">Chinese zodiac</span><span class="s">Fire Rabbit</span></div><span class="arrow">+</span></summary>
+        <div class="body"><p>Gracious and diplomatic with real heat underneath. Fire Rabbits exit quietly rather than fight; you rarely get a second warning. Keep the room warm and the honesty gentle.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+<section class="view" id="v-profile">
+  <div class="inner">
+    <div class="sec">
+      <h2>How she's wired</h2>
+      <p class="lede">The synthesis, in plain English.</p>
+      <div class="card">
+        <p style="margin:0 0 10px">She is a truth-teller with a soft entrance. Sagittarius fire makes her funny, direct and hungry for new experiences; Scorpio water underneath makes her private, loyal and slow to fully trust. She reads people fast and remembers everything.</p>
+        <p style="margin:0 0 10px">She wants to be seen for what she sees, invited rather than scheduled, and free to vanish and return. She leads her own life and resents being managed, even kindly.</p>
+        <p style="margin:0">2026 is a building year for her. The friends who help her build, and don't pull her off course, are the ones who stay.</p>
+      </div>
+    </div>
+    <div class="sec">
+      <h2>Love language tracker</h2>
+      <p class="lede">Unknown so far. Tap one each time she visibly lights up and let the data decide.</p>
+      <div class="card">
+        <div class="ll" id="ll"></div>
+        <p class="ll-note" id="ll-note">No data yet. Run the experiment for two weeks.</p>
+        <button class="btn ghost" style="margin-top:10px; font-size:13px; padding:8px 12px" onclick="resetLL()">Reset counts</button>
+      </div>
+    </div>
+    <div class="sec">
+      <h2>Do / don't</h2>
+      <div class="card">
+        <p style="margin:0 0 6px"><b>Do:</b> invite, don't assign. Ask what she sees. Keep her secrets. Say the true thing kindly. Plan something she's never done.</p>
+        <p style="margin:0"><b>Don't:</b> lecture. Repeat what she told you in confidence. Pin her to a rigid plan. Give advice she didn't ask for. Mistake her quiet for distance.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="view" id="v-texts">
+  <div class="inner">
+    <div class="sec">
+      <h2>What to text her</h2>
+      <p class="lede">Pick a lane, tap Another until one sounds like you, copy, send. Sagittarius wants an invitation, not a status request.</p>
+      <div class="cats" id="cats"></div>
+      <div class="txtcard"><p id="txt"></p><div class="row"><button onclick="nextTxt()">Another</button><button class="primary" id="copybtn" onclick="copyTxt()">Copy</button></div></div>
+      <p class="note">Rules: one text, not three. Ask one question, not a list. If she goes quiet, wait; the next one is on her.</p>
+    </div>
+    <div class="sec">
+      <h2>Things she's told me</h2>
+      <p class="lede">Log details here the minute she mentions them. Quoting her back a month later tells a Scorpio Moon you were actually listening.</p>
+      <textarea class="notes" id="notes" placeholder="Her mom's name. The place she said she wants to go. The thing she said she wanted to try. Dates that matter."></textarea>
+      <p class="note" id="notesnote">Saved on this phone.</p>
+    </div>
+    <div class="sec">
+      <h2>Love language idea bank</h2>
+      <p class="lede">All five, built for her chart. Rotate them and log hits on the Her tab.</p>
+      <details open>
+        <summary><div><span class="t">Words</span><span class="s">Recognition, not flattery</span></div><span class="arrow">+</span></summary>
+        <div class="body"><ul class="ideas">
+          <li><b>Name what she sees.</b> "You called that before anyone else did." Projectors live for being recognized for their perception.</li>
+          <li><b>Ask her read on something real.</b> A deal, a person, a decision. Then actually use it and tell her you did.</li>
+          <li><b>Say the true thing.</b> Sagittarius respects honesty more than comfort. Soft delivery, hard truth.</li>
+          <li><b>Quote her back.</b> Pull from the notes above. Scorpio Moon notices who remembers.</li>
+        </ul></div>
+      </details>
+      <details>
+        <summary><div><span class="t">Time</span><span class="s">Invitations with room to breathe</span></div><span class="arrow">+</span></summary>
+        <div class="body"><ul class="ideas">
+          <li><b>Invite, with an out.</b> "Doing X Saturday, you're welcome, no pressure." Freedom is the love language of a Sag stellium.</li>
+          <li><b>Go somewhere new together.</b> A day trip, a neighborhood she hasn't done, a show. Novelty counts as quality time for her.</li>
+          <li><b>Long unstructured hangs.</b> Porch, drive, walk. Scorpio Moon opens up when there's no clock.</li>
+          <li><b>Let her leave early</b> without making it a thing. Pisces rising runs out of social battery fast.</li>
+        </ul></div>
+      </details>
+      <details>
+        <summary><div><span class="t">Gifts</span><span class="s">Experiences and books over objects</span></div><span class="arrow">+</span></summary>
+        <div class="body"><ul class="ideas">
+          <li><b>Tickets, not things.</b> A concert, a flight, a class. Sagittarius wants to go somewhere.</li>
+          <li><b>A book you actually read</b> with one line about why it's hers. Gate 11 feeds on ideas.</li>
+          <li><b>December 18 is its own holiday.</b> Never fold her birthday into Christmas. Make it a separate, deliberate event.</li>
+          <li><b>The thing she mentioned once.</b> From the notes. The gift is the memory.</li>
+        </ul></div>
+      </details>
+      <details>
+        <summary><div><span class="t">Acts</span><span class="s">Remove friction, don't take over</span></div><span class="arrow">+</span></summary>
+        <div class="body"><ul class="ideas">
+          <li><b>Handle logistics she hates</b>, then hand her the keys. Life Path 1 wants the wheel, not the paperwork.</li>
+          <li><b>Make the intro.</b> 4th-line profiles grow through network. Connect her to the exact right person with a reason.</li>
+          <li><b>Show up to her thing early.</b> Whatever she's launching or presenting, be in the room before it starts.</li>
+          <li><b>Defend her when she's not there.</b> Scorpio loyalty is earned in rooms she can't see.</li>
+        </ul></div>
+      </details>
+      <details>
+        <summary><div><span class="t">Touch</span><span class="s">Earned, then easy</span></div><span class="arrow">+</span></summary>
+        <div class="body"><ul class="ideas">
+          <li><b>Follow her lead.</b> Scorpio Moon decides who gets in her space. Match what she offers, then it's easy.</li>
+          <li><b>Big hello and goodbye hugs</b> once you're in. Fire signs are warm and physical with their people.</li>
+          <li><b>Celebration touch.</b> High fives, a shoulder grab when she nails something.</li>
+          <li><b>Read the room on hard days.</b> Pisces rising sometimes needs presence without contact.</li>
+        </ul></div>
+      </details>
+    </div>
+    <div class="sec moon">
+      <h2>To the moon</h2>
+      <p class="lede">The moves that turn a good friend into a best friend for life.</p>
+      <div class="card"><div><h3>Recognize her, then invite her</h3><p>The Projector sequence. Tell her specifically what you see in her, then invite her into something real. Never the other way around.</p></div></div>
+      <div class="card"><div><h3>Be the vault</h3><p>Scorpio Moon friendships are built on what you never repeat. One leak and the door closes quietly and permanently.</p></div></div>
+      <div class="card"><div><h3>Tell her the truth</h3><p>Four planets in Sagittarius. She can smell a managed answer. Honest disagreement earns more trust than agreement ever will.</p></div></div>
+      <div class="card"><div><h3>Give her your people</h3><p>Fourth-line profile. The best gift you can give her is the right introduction at the right moment, with a specific reason.</p></div></div>
+      <div class="card"><div><h3>Protect her freedom</h3><p>Saturn and Uranus on her Sun: she needs structure she chose and freedom she doesn't have to explain. Never guilt her for leaving early or changing plans.</p></div></div>
+      <div class="card"><div><h3>Take her ideas seriously</h3><p>Gate 11 and Expression 11. She throws off ideas constantly and most people let them drop. Catch one and build on it with her.</p></div></div>
+      <div class="card"><div><h3>Own December 18</h3><p>A December birthday has been swallowed by the holidays her whole life. Make hers a standalone event, planned to the minute.</p></div></div>
+      <div class="card"><div><h3>Be the 1 AM call</h3><p>Say it once, plainly: "If it goes sideways, you call me, any hour." Then answer when it does. That's the whole moon.</p></div></div>
+    </div>
+  </div>
+</section>
+<section class="view" id="v-playbook">
+  <div class="inner">
+    <div class="sec">
+      <h2>The playbook</h2>
+      <p class="lede">Six moves. Check them off as you do them. Progress saves on this phone.</p>
+      <div class="progress"><i id="pbar"></i></div>
+      <p class="note" id="pnote">0 of 6</p>
+      <div id="steps"></div>
+    </div>
+  </div>
+</section>
+<section class="view" id="v-burgers">
+  <div class="inner">
+    <div class="sec">
+      <h2>The adventure list</h2>
+      <p class="lede">Sagittarius keeps score in experiences. Rate each one after you do it together. The list re-sorts itself.</p>
+      <div id="burgers"></div>
+      <div class="add">
+        <input id="newb" placeholder="Add an adventure" aria-label="Add an adventure">
+        <button class="btn" onclick="addBurger()">Add</button>
+      </div>
+      <p class="note" style="margin-top:10px">Rule: she picks every other one. Invite, give her an out, and let her change the plan.</p>
+    </div>
+  </div>
+</section>
+<section class="view" id="v-sources">
+  <div class="inner">
+    <div class="sec src">
+      <h2>How I got this</h2>
+      <p class="lede">What's solid, what's a hand calculation, and what to verify.</p>
+      <div class="card">
+        <p><b>Birth data.</b> December 18, 1987, 11:47 AM, Austin → 17:47 UT (Central Standard Time). Coordinates 30.3°N, 97.7°W.</p>
+        <p><b>Sun.</b> From the date; about 26° Sagittarius. High confidence.</p>
+        <p><b>Moon.</b> Counted back from the December 20, 1987 new moon (~2.2 days × ~13°/day). Lands near 29° Scorpio, within a degree or two of the Sagittarius cusp, so the Moon sign itself is only moderate confidence.</p>
+        <p><b>Ascendant.</b> Sidereal-time calculation by hand. Moderate confidence; a 15-minute birth-time error moves it ~4°, still Pisces.</p>
+        <p><b>Other planets.</b> From remembered late-1987 positions. High confidence for Venus, Mars, Jupiter through Pluto; lower for Mercury (recently stationed direct) and the North Node (crossing from Aries into Pisces that month).</p>
+        <p><b>Numerology.</b> Pythagorean arithmetic on "LaKeisha Cole" (first and last name as given; no middle name supplied). Life Path 1, Expression 11, Soul Urge 9, Personality 2. High confidence given the spelling.</p>
+        <p><b>Human Design.</b> Sun 26.3° Sagittarius maps to Gate 11.4. The design Sun (88° earlier) lands within minutes of the Gate 6 / Gate 46 boundary, so the profile is 4/6 or 4/1; the cross is Right Angle Cross of Eden either way. Projector is the likely type from the gates I could place; verify with a proper chart.</p>
+        <p><b>Gene Keys.</b> Follow from the Human Design gates, with the same 6/46 and 36/25 ambiguity.</p>
+        <p><b>Adventure list.</b> My suggestions, no search. Love language, favorite color, food and stories were not supplied; add them and the texts and gifts can be tuned.</p>
+        <p><b>To raise confidence:</b> run the birth data through astro.com and mybodygraph.com and check the Moon sign, the Ascendant, the profile and the HD type.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<nav class="tabs" aria-label="Sections">
+  <button data-v="chart" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg>Chart</button>
+  <button data-v="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>Her</button>
+  <button data-v="texts"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>Texts</button>
+  <button data-v="playbook"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Playbook</button>
+  <button data-v="burgers"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-2 6-4 0 2-6z"/></svg>Adventures</button>
+  <button data-v="sources"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>Sources</button>
+</nav>
+<script>
+const store = {
+  get(k, d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+const tabs=[...document.querySelectorAll('nav.tabs button')];
+function show(v){
+  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active', s.id==='v-'+v));
+  tabs.forEach(b=>b.classList.toggle('on', b.dataset.v===v));
+  window.scrollTo(0,0);
+  try{ history.replaceState(null,'','#'+v); }catch(e){}
+}
+tabs.forEach(b=>b.addEventListener('click',()=>show(b.dataset.v)));
+const h=(location.hash||'').replace('#','');
+if(['chart','profile','texts','playbook','burgers','sources'].includes(h)) show(h);
+const glyphs=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+const planets=[
+ {g:'☉',n:'Sun',lon:266.3,title:'Sun in Sagittarius',text:'Her core. Truth, freedom, humor, movement. She needs room to roam and people who will tell her the real thing. Boxes and lectures are the fastest way out of her life.'},
+ {g:'☽',n:'Moon',lon:239.5,title:'Moon in late Scorpio (on the Sagittarius cusp)',text:'The private engine. Loyal, intense, slow to trust, never forgets. What you keep for her matters more than what you say to her. Verify the degree; it sits within a degree or two of the cusp.'},
+ {g:'AC',n:'Ascendant',lon:340,title:'Pisces rising',text:'The soft entrance. She reads feelings before words, absorbs rooms, and needs alone time to recover from people. Mistaking her quiet for distance is the classic error.'},
+ {g:'☿',n:'Mercury',lon:245,title:'Mercury in Sagittarius',text:'Big-picture thinker, says the quiet part out loud, bored by details and small talk. Lower confidence on the exact degree.'},
+ {g:'♀',n:'Venus',lon:265,title:'Venus in Sagittarius, conjunct her Sun',text:'She loves through adventure, honesty and laughter, and is drawn to people who expand her world. An invitation somewhere new is worth more than a gift.'},
+ {g:'♂',n:'Mars',lon:227,title:'Mars in Scorpio',text:'Strategic, patient, relentless when she wants something. She does not fight loud; she waits. Never underestimate her.'},
+ {g:'♃',n:'Jupiter',lon:22,title:'Jupiter in Aries',text:'Luck finds her when she goes first. Encourage the bold move; she expands by doing.'},
+ {g:'♄',n:'Saturn',lon:262,title:'Saturn in Sagittarius, conjunct her Sun',text:'The weight under the jokes. Serious ambition, hard-won lessons, self-demanding. Respect the gravity; she carries more than she shows.'},
+ {g:'♅',n:'Uranus',lon:267,title:'Uranus in Sagittarius, conjunct her Sun',text:'The rebel streak. Original, unpredictable, reinvents on her own schedule. Do not try to make her consistent.'},
+ {g:'♆',n:'Neptune',lon:277,title:'Neptune in Capricorn',text:'Generational: the practical dreamer who wants ideals to become structures. Help her build the thing.'},
+ {g:'♇',n:'Pluto',lon:222,title:'Pluto in Scorpio',text:'Generational depth. Endings and rebirths are familiar territory. Respect the scar tissue.'},
+ {g:'☊',n:'North Node',lon:359,title:'North Node at the Pisces/Aries cusp',text:'Growth direction: trusting her own instincts and going first, with compassion leading. Cheer the independence, not the caretaking.'}
+];
+const svg=document.getElementById('wheel'); const NS='http://www.w3.org/2000/svg';
+const cx=170, cy=170, R=160, Rin=118, Rp=138;
+const asc=340;
+function ang(lon){ return (180 + (lon-asc)) * Math.PI/180 * -1 + Math.PI; }
+function pt(r,lon){ const a=ang(lon); return [cx+r*Math.cos(a), cy-r*Math.sin(a)]; }
+function el(t,attrs,parent){ const e=document.createElementNS(NS,t); for(const k in attrs) e.setAttribute(k,attrs[k]); (parent||svg).appendChild(e); return e; }
+el('circle',{cx,cy,r:R,fill:'none',stroke:'#A897C2',"stroke-width":1});
+el('circle',{cx,cy,r:Rin,fill:'none',stroke:'#A897C2',"stroke-width":1,opacity:.6});
+el('circle',{cx,cy,r:60,fill:'none',stroke:'#A897C2',"stroke-width":1,opacity:.35});
+for(let i=0;i<12;i++){
+  const [x1,y1]=pt(Rin,i*30),[x2,y2]=pt(R,i*30);
+  el('line',{x1,y1,x2,y2,stroke:'#A897C2',"stroke-width":1,opacity:.7});
+  const [tx,ty]=pt((R+Rin)/2,i*30+15);
+  const t=el('text',{x:tx,y:ty+5,"text-anchor":'middle',class:'sign-label'}); t.style.fontSize='15px'; t.textContent=glyphs[i];
+}
+for(let d=0;d<360;d+=10){ const [x1,y1]=pt(Rin,d),[x2,y2]=pt(Rin-5,d); el('line',{x1,y1,x2,y2,stroke:'#A897C2',"stroke-width":1,opacity:.5}); }
+const [ax,ay]=pt(Rin,asc),[dx,dy]=pt(Rin,asc+180); el('line',{x1:ax,y1:ay,x2:dx,y2:dy,stroke:'#E0A34A',"stroke-width":1.5,opacity:.8});
+const [mx,my]=pt(Rin,257.1),[ix,iy]=pt(Rin,77.1); el('line',{x1:mx,y1:my,x2:ix,y2:iy,stroke:'#E0A34A',"stroke-width":1,opacity:.5,"stroke-dasharray":'3 3'});
+const sorted=[...planets].sort((a,b)=>a.lon-b.lon); let last=-99;
+sorted.forEach(p=>{ p.vis=p.lon; if(p.vis-last<7) p.vis=last+7; last=p.vis; });
+const readout=document.getElementById('readout');
+sorted.forEach(p=>{
+  const [x,y]=pt(Rp,p.vis); const [lx,ly]=pt(Rin,p.lon); const [lx2,ly2]=pt(Rp-11,p.vis);
+  el('line',{x1:lx,y1:ly,x2:lx2,y2:ly2,stroke:'#A897C2',"stroke-width":1,opacity:.6});
+  const g=el('g',{class:'planet',tabindex:0,role:'button','aria-label':p.title});
+  el('circle',{cx:x,cy:y,r:11,fill:'#4A3270',stroke:'#A897C2',"stroke-width":1},g);
+  const t=el('text',{x,y:y+4.5,"text-anchor":'middle'},g); t.textContent=p.g; if(p.g==='AC') t.style.fontSize='9px';
+  const sel=()=>{ document.querySelectorAll('.planet').forEach(q=>q.classList.remove('sel')); g.classList.add('sel');
+    readout.innerHTML=`<h3>${p.title}</h3><p>${p.text}</p>`; };
+  g.addEventListener('click',sel); g.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();sel();} });
+});
+const ct=el('text',{x:cx,y:cy-4,"text-anchor":'middle',class:'sign-label'}); ct.style.fontSize='13px'; ct.textContent='LaKeisha';
+const ct2=el('text',{x:cx,y:cy+12,"text-anchor":'middle',class:'sign-label'}); ct2.textContent='12·18·87';
+const LLS=['Words','Time','Gifts','Acts','Touch'];
+let ll=store.get('lakeisha-ll',[0,0,0,0,0]);
+function renderLL(){
+  const box=document.getElementById('ll'); const max=Math.max(...ll);
+  box.innerHTML=LLS.map((n,i)=>`<button class="${max>0&&ll[i]===max?'hot':''}" onclick="bumpLL(${i})" aria-label="${n}: ${ll[i]}"><span class="n">${ll[i]}</span>${n}</button>`).join('');
+  const total=ll.reduce((a,b)=>a+b,0); const note=document.getElementById('ll-note');
+  if(!total) note.textContent='No data yet. Run the experiment for two weeks.';
+  else { const i=ll.indexOf(max); note.textContent=`${total} observations. Leading: ${LLS[i]} (${Math.round(max/total*100)}%). Keep running all five anyway; she notices.`; }
+}
+function bumpLL(i){ ll[i]++; store.set('lakeisha-ll',ll); renderLL(); }
+function resetLL(){ ll=[0,0,0,0,0]; store.set('lakeisha-ll',ll); renderLL(); }
+renderLL();
+const TXT={
+ 'Check in':[
+  'No agenda. Just checking the Sagittarius is still free-range.',
+  'Week out of 10? One number, no explanation required.',
+  'Thinking about you. That is the whole text.',
+  'One thing that went right this week? I will go second.'
+ ],
+ 'Banter':[
+  'Found out you have four planets in Sagittarius. Explains everything. Not elaborating.',
+  'Your friend application has been escalated to senior leadership.',
+  'I need a ruling on something and you are the only honest person I know.',
+  'Reminder that December 18 is a federal holiday in my house.'
+ ],
+ 'Adventure':[
+  'Doing something new Saturday. You are invited. No pressure, no itinerary.',
+  'Found a place neither of us has been. Day trip?',
+  'Live show Thursday. Weeknight rules: we leave when it stops being fun.',
+  'Road trip. No plan. You in or you in?'
+ ],
+ 'Recognize her':[
+  'You called that one before anyone else did. Just so you know I noticed.',
+  'I used your read on that thing. You were right. Thank you.',
+  'You see people more clearly than almost anyone I know. Do not let anyone talk you out of that.',
+  'Told someone about you today. Said you are the most honest person in Austin. Standing by it.'
+ ],
+ 'Go deeper':[
+  'What is an idea you have had that nobody took seriously enough?',
+  'What are you building this year that no one knows about yet?',
+  'What would you tell the you from ten years ago?',
+  'What do you see about me that I probably do not?',
+  'Austin native question: what is the thing about this city only locals understand?'
+ ],
+ 'Her birthday':[
+  'Blocking December 18 now. It is not getting folded into Christmas on my watch.',
+  'Birthday planning question: adventure, dinner, or both? Wrong answers accepted.',
+  'Your birthday is a standalone event this year. Non-negotiable.'
+ ]
+};
+let cat=Object.keys(TXT)[0], lastIdx=-1;
+function renderCats(){ document.getElementById('cats').innerHTML=Object.keys(TXT).map(c=>`<button class="${c===cat?'on':''}" onclick="setCat('${c}')">${c}</button>`).join(''); }
+function setCat(c){ cat=c; lastIdx=-1; renderCats(); nextTxt(); }
+function nextTxt(){ const pool=TXT[cat]; let i; do{ i=Math.floor(Math.random()*pool.length);}while(pool.length>1&&i===lastIdx); lastIdx=i; document.getElementById('txt').textContent=pool[i]; document.getElementById('copybtn').textContent='Copy'; }
+async function copyTxt(){ const t=document.getElementById('txt').textContent; const b=document.getElementById('copybtn'); try{ await navigator.clipboard.writeText(t); b.textContent='Copied'; }catch(e){ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); b.textContent='Copied';}catch(_){ b.textContent='Long-press to copy'; } document.body.removeChild(ta);} setTimeout(()=>b.textContent='Copy',1500); }
+renderCats(); nextTxt();
+const notes=document.getElementById('notes'); notes.value=store.get('lakeisha-notes','');
+let nt; notes.addEventListener('input',()=>{ clearTimeout(nt); nt=setTimeout(()=>{ store.set('lakeisha-notes',notes.value); document.getElementById('notesnote').textContent='Saved on this phone.'; },400); document.getElementById('notesnote').textContent='Saving…'; });
+const STEPS=[
+ {t:'Recognize her before you ask anything',p:'Tell her one specific thing you see in her. Then invite her into something.',w:'Projector mechanics plus Soul Urge 9. Recognition opens every door; pushing closes them.'},
+ {t:'Earn vault status',p:'Keep one real confidence for 90 days without a slip.',w:'Scorpio Moon and Mars. Trust is binary and slow, and it is the whole foundation.'},
+ {t:'Invite her somewhere new',p:'One novel experience a month, with an easy out.',w:'Four planets in Sagittarius. Novelty and freedom are quality time.'},
+ {t:'Ask for her read and use it',p:'Bring her a real decision. Act on her take. Report back.',w:'Gate 11 ideas, Expression 11 insight, Life Path 1 wants to matter.'},
+ {t:'Run all five love languages on purpose',p:'Small doses of each. Log which one lands on the Her tab.',w:'Unknown starting point; let the tracker decide.'},
+ {t:'Let her disappear and come back',p:'No guilt when she goes quiet or leaves early. Welcome her back like nothing happened.',w:'Pisces rising burns social battery fast; Saturn-Uranus Sun needs unexplained freedom.'}
+];
+let done=store.get('lakeisha-steps',[]);
+function renderSteps(){
+  const box=document.getElementById('steps');
+  box.innerHTML=STEPS.map((s,i)=>`<div class="step ${done.includes(i)?'done':''}">
+    <button class="chk" onclick="toggleStep(${i})" aria-pressed="${done.includes(i)}" aria-label="Mark step ${i+1} done"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--accent-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7"/></svg></button>
+    <div class="txt"><h3>${s.t}</h3><p>${s.p}</p><div class="why">${s.w}</div></div></div>`).join('');
+  document.getElementById('pbar').style.width=(done.length/STEPS.length*100)+'%';
+  document.getElementById('pnote').textContent=`${done.length} of ${STEPS.length}`+(done.length===STEPS.length?' — application approved.':'');
+}
+function toggleStep(i){ done=done.includes(i)?done.filter(x=>x!==i):[...done,i]; store.set('lakeisha-steps',done); renderSteps(); }
+renderSteps();
+const DEFAULT_B=[
+ {n:'Day trip somewhere neither of you has been',s:'Sag fuel'},
+ {n:'A live show on a weeknight',s:'Spontaneous beats planned'},
+ {n:'Sunrise or sunset at the lake',s:'Pisces rising recharge'},
+ {n:'A class in something she is curious about',s:'Gate 11 wants new ideas'},
+ {n:'Her pick of a restaurant you have never tried',s:'Radiance 46: delight'},
+ {n:'A road trip with no itinerary',s:'The Sagittarius test'},
+ {n:'Her December 18 birthday, done properly',s:'Standalone, planned to the minute'}
+];
+let burgers=store.get('lakeisha-burgers', DEFAULT_B.map(b=>({...b,r:0})));
+function renderBurgers(){
+  const box=document.getElementById('burgers');
+  const list=[...burgers].map((b,i)=>({...b,i})).sort((a,b)=>b.r-a.r);
+  box.innerHTML=list.map((b,k)=>`<div class="burger">
+    <div class="rank">${b.r?k+1:'·'}</div>
+    <div class="name"><b>${b.n}</b><span>${b.s||''}</span></div>
+    <div class="stars" role="group" aria-label="Rate ${b.n}">${[1,2,3,4,5].map(s=>`<button class="${b.r>=s?'on':''}" onclick="rate(${b.i},${s})" aria-label="${s} stars">★</button>`).join('')}</div>
+  </div>`).join('');
+}
+function rate(i,s){ burgers[i].r = burgers[i].r===s?0:s; store.set('lakeisha-burgers',burgers); renderBurgers(); }
+function addBurger(){ const inp=document.getElementById('newb'); const v=inp.value.trim(); if(!v) return; burgers.push({n:v,s:'Her idea',r:0}); inp.value=''; store.set('lakeisha-burgers',burgers); renderBurgers(); }
+document.getElementById('newb').addEventListener('keydown',e=>{ if(e.key==='Enter') addBurger(); });
+renderBurgers();
+</script>
+</body>
+</html>
